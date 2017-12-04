@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="root" ng-strict-di>
+  <head>
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+      body {
+        font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 100%;
+        color: #525252;
+      }
+      .loader {
+        font-size: 24px;
+        font-weight: 100;
+        text-align: center;
+        max-width: 600px;
+        margin: 80px auto 0;
+      }
+    </style>
+    <title>AngularJS Webpack</title>
+  </head>
+  <body>
+      
+    <root>
+      <div class="loader">Loading...</div>
+    </root>
+
+    <script src="/vendor/vendor.js"></script>
+    <script src="/build/app.js"></script>
+  </body>
+</html>
