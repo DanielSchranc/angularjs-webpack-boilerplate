@@ -61,7 +61,7 @@ const plugins = [
   }),
   new HtmlWebpackPlugin({
     minify: false,
-    template: path.join(__dirname, 'src/template/index.html'),
+    template: path.join(__dirname, 'src/index.html'),
     inject: 'body',
     hash: false
   }),
