@@ -13,7 +13,7 @@ const rules = [
           plugins: [
             ['angularjs-annotate', { explicitOnly: false }]
           ],
-          presets: ['es2015']
+          presets: ['@babel/preset-env']
         }
       }
     ],
@@ -61,13 +61,18 @@ const plugins = [
   }),
   new HtmlWebpackPlugin({
     minify: false,
-    template: path.join(__dirname, 'src/index.html'),
+    template: path.join(__dirname, 'src/template/index.html'),
     inject: 'body',
     hash: false
-  }),
-  new webpack.NamedModulesPlugin(),
-  new webpack.HotModuleReplacementPlugin()
+  })
 ];
+
+if (process.env.NODE_ENV === 'dev') {
+  plugins.push(
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin()
+  );
+}
 
 if (process.env.NODE_ENV === 'production') {
   plugins.push(
@@ -119,13 +124,13 @@ module.exports = {
     }
   },
   entry: {
-    app: ['./src/root.module.js']
+    app: ['./src/app/root.module.js']
   },
   output: {
     filename: '[name].bundle-[hash]-[id].js',
     chunkFilename: '[name].chunk-[hash]-[id].js',
     sourceMapFilename: '[name].bundle-[hash]-[id].map',
-    path: path.resolve(cwd, 'build')
+    path: path.join(__dirname, 'build')
   },
   module: {
     rules

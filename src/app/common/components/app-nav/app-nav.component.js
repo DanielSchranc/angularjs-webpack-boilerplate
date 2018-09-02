@@ -1,4 +1,5 @@
 export const AppNavComponent = {
+  selector: 'appNav',
   bindings: {
     user: '<',
     onLogout: '&',
@@ -14,7 +15,7 @@ export const AppNavComponent = {
           <div class="header__logout">
             <a
               href=""
-              ng-click="$ctrl.onLogout();">
+              ng-click="$ctrl.logoutUser();">
               <span class="header__button">
                 <svg class="header__logout--icon" xmlns="http://www.w3.org/2000/svg" fill="#ff6347" height="18" viewBox="0 0 24 24" width="18">
                   <path d="M0 0h24v24H0z" fill="none"/>
@@ -29,10 +30,23 @@ export const AppNavComponent = {
     </header>
   `,
   controller: class AppNavComponent {
-    constructor(EventEmmiter) {
+    constructor(EventEmitter) {
       'ngInject';
 
-      this.EventEmmiter = EventEmmiter;
+      this.EventEmitter = EventEmitter;
+    }
+
+    $onInit() {
+      console.log('>>>One way data flow', this.user);
+      this.user = Object.assign({}, this.user);
+    }
+
+    logoutUser() {
+      this.onLogout(
+        this.EventEmitter({
+          userEmail: this.user.email,
+        })
+      );
     }
   }
 };

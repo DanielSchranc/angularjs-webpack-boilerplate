@@ -1,9 +1,10 @@
 export const AppComponent = {
+  selector: 'app',
   template: `
     <div class="app">
       <app-nav
         user="$ctrl.user"
-        on-logout="$ctrl.logout();"
+        on-logout="$ctrl.logout($event);"
         button-title="{{$ctrl.button}}">
       </app-nav>
       <ui-view></ui-view>
@@ -25,9 +26,11 @@ export const AppComponent = {
       };
     }
 
-    logout() {
-      // change for service call
-      console.log(this.user, 'has been logged out...');
+    logout(event) {
+      // Make a service call or simmilar...
+      if (event.userEmail === this.user.email) {
+        console.log('>>>User has been logged out: ', { email: event.userEmail });
+      }
     }
   }
 };
