@@ -1,7 +1,7 @@
-const cwd = process.cwd();
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const rules = [
   {
@@ -11,14 +11,16 @@ const rules = [
         loader: 'babel-loader',
         options: {
           plugins: [
-            ['angularjs-annotate', { explicitOnly: false }]
+            ['@babel/plugin-transform-runtime', { corejs: 2 }],
+            ['angularjs-annotate', { explicitOnly: false }],
+            'lodash'
           ],
           presets: ['@babel/preset-env']
         }
       }
     ],
     include: [
-      path.resolve(cwd, 'src')
+      path.join(__dirname, 'src')
     ],
     exclude: /node_modules/
   },
@@ -51,13 +53,9 @@ const rules = [
 ];
 
 const plugins = [
+  new webpack.ProgressPlugin(),
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-  }),
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    minChunks: module => module.context && /node_modules/.test(module.context),
-    filename: '[name].bundle-[hash]-[id].js'
   }),
   new HtmlWebpackPlugin({
     minify: false,
@@ -67,7 +65,7 @@ const plugins = [
   })
 ];
 
-if (process.env.NODE_ENV === 'dev') {
+if (process.env.NODE_ENV === 'development') {
   plugins.push(
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin()
@@ -79,31 +77,12 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      beautify: false,
-      mangle: {
-        screw_ie8: true
-      },
-      compress: {
-        unused: true,
-        dead_code: true,
-        drop_debugger: true,
-        conditionals: true,
-        evaluate: true,
-        drop_console: true,
-        sequences: true,
-        booleans: true,
-        screw_ie8: true,
-        warnings: false
-      },
-      comments: false
     })
   );
 }
 
 module.exports = {
+  mode: process.env.NODE_ENV,
   cache: true,
   context: __dirname,
   performance: {
@@ -115,7 +94,7 @@ module.exports = {
     compress: true,
     inline: true,
     hot: true,
-    quiet: true,
+    quiet: false,
     port: 4000,
     historyApiFallback: true,
     stats: {
@@ -132,6 +111,40 @@ module.exports = {
     sourceMapFilename: '[name].bundle-[hash]-[id].map',
     path: path.join(__dirname, 'build')
   },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor',
+          chunks: 'all'
+        }
+      }
+    },
+    minimizer: [new UglifyJsPlugin({
+      sourceMap: true,
+      uglifyOptions: {
+        ie8: false,
+        mangle: true,
+        toplevel: false,
+        compress: {
+          booleans: true,
+          conditionals: true,
+          dead_code: true,
+          drop_debugger: true,
+          drop_console: true,
+          evaluate: true,
+          sequences: true,
+          unused: true,
+          warnings: false
+        },
+        output: {
+          comments: false,
+          beautify: false,
+        }
+      }
+    })]
+  },
   module: {
     rules
   },
@@ -142,7 +155,7 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js'],
-    modules: ['node_modules', cwd]
+    modules: ['node_modules', __dirname]
   },
   plugins
 };
